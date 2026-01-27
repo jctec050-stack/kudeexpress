@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "KuDE Express Paraguay",
+  "version": "1.0",
+  "description": "Visualizador profesional de facturas electrónicas para el portal e-Kuatia.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.set.gov.py/*",
+    "https://ekuatia.set.gov.py/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.set.gov.py/*",
+        "https://ekuatia.set.gov.py/consultas/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "KuDE Express"
+  }
+}
