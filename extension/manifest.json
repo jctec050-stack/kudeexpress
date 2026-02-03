@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "KuDE Express Paraguay",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Visualizador profesional de facturas electrónicas para el portal e-Kuatia.",
   "permissions": [
     "storage"

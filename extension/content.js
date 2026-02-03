@@ -1,5 +1,5 @@
 // Configuración
-const BASE_URL = "http://localhost:3000"; // CAMBIAR POR URL DE PRODUCCIÓN
+const BASE_URL = "https://kudeexpress.vercel.app/"; // CAMBIAR POR URL DE PRODUCCIÓN
 const API_URL = `${BASE_URL}/api/invoices`;
 const VISOR_URL = `${BASE_URL}`; // Ahora es la raíz
 
