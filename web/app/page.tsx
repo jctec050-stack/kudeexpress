@@ -8,6 +8,8 @@ import { InvoiceData } from '@/types/factura';
 import InvoiceDisplay from '@/components/InvoiceDisplay';
 import RucSearch from '@/components/RucSearch';
 
+export const dynamic = 'force-dynamic';
+
 function HomeContent() {
   const searchParams = useSearchParams();
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
