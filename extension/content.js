@@ -166,134 +166,115 @@ function injectKudeButton() {
   // Verificamos si ya inyectamos el botón para no duplicarlo
   if (document.getElementById('kude-express-btn')) return;
 
-  // Localizamos el contenedor principal de la consulta (ajustar selector según el DOM real de e-Kuatia)
-  const container = document.querySelector('.v-card__title') || document.querySelector('h2') || document.body;
+  // CRITICO: Solo mostramos el botón si ya aparece alguna evidencia de que la factura está cargada.
+  // Esto confirma que el usuario pasó el captcha.
 
-  if (container) {
-    const btn = document.createElement('button');
-    btn.id = 'kude-express-btn';
+  // 1. Buscamos el botón de descarga XML
+  const xpathXml = "//*[contains(text(), 'Descargar XML')]";
+  const downloadBtn = document.evaluate(xpathXml, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+  // 2. Buscamos etiquetas comunes de factura (Timbrado) por si el botón XML tiene otro texto o delay
+  const hasTimbrado = document.body.innerText.includes("Timbrado");
+
+  // Si no hay botón XML Y no hay texto de factura, asumimos que estamos en el captcha o cargando
+  if (!downloadBtn && !hasTimbrado) return;
+
+  console.log("KUDE Express: Factura detectada. Inyectando botón...");
+
+  // Si llegamos aquí, es seguro inyectar
+  const btn = document.createElement('button');
+  btn.id = 'kude-express-btn';
+  btn.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+      <span>Ver KUDE</span>
+    </div>
+  `;
+
+  // Estilos del botón (Look & Feel Moderno - Compacto)
+  Object.assign(btn.style, {
+    backgroundColor: '#0052cc',
+    color: 'white',
+    padding: '6px 12px', // Más pequeño
+    border: 'none',
+    borderRadius: '6px', // Bordes un poco menos redondeados
+    cursor: 'pointer',
+    fontSize: '12px', // Fuente más chica
+    fontWeight: '600',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    margin: '0 10px 10px 0', // Ajuste de margen para alinearse con los otros
+    transition: 'all 0.2s ease'
+  });
+
+  btn.onmouseover = () => btn.style.backgroundColor = '#0041a3';
+  btn.onmouseout = () => btn.style.backgroundColor = '#0052cc';
+
+  btn.onclick = async () => {
+    btn.textContent = "Procesando...";
+    btn.disabled = true;
+
+    // 1. Mapeo de datos detectados (según lista del usuario)
+    const facturaData = {
+      items: getItems(),
+      cdc: getDataByLabel("CDC") || getDataByLabel("CDC:"),
+      timbrado: getDataByLabel("Timbrado N°"),
+      numero: getDataByLabel("N° de DTE"),
+      tipo: getDataByLabel("Tipo de DTE"),
+      fecha: getDataByLabel("Fecha y Hora de Emisión"),
+
+      // Emisor
+      emisor: getDataByLabel("Razón Social del Emisor"),
+      ruc: getDataByLabel("RUC", 1),
+      direccion_emisor: getDataByLabel("Dirección donde se emitió el DTE"),
+      correo_emisor: getDataByLabel("Correo electrónico del emisor"),
+      telefono_emisor: getDataByLabel("Teléfono local de emisión de DE"),
+
+      // Receptor
+      receptor: getDataByLabel("Nombre o Razón Social del Receptor"),
+      ruc_receptor: getDataByLabel("RUC", 2),
+      direccion_receptor: getDataByLabel("Dirección", 2) || getDataByLabel("Direccion", 2),
+      telefono_receptor: getDataByLabel("Teléfono", 2),
+      correo_receptor: getDataByLabel("Correo Electrónico"),
+
+      condicion: getDataByLabel("Condición de Venta"),
+      moneda: getDataByLabel("Moneda de la Operación"),
+
+      // Totales
+      total: getDataByLabel("Monto Total") || getDataByLabel("Total General") || getDataByLabel("Total"),
+      iva_total: getDataByLabel("Liquidación del IVA") || getDataByLabel("Total IVA")
+    };
+
+    // 3. MODO LOCAL (Por defecto)
+    // Codificamos los datos en la URL en Base64
+    const payload = btoa(unescape(encodeURIComponent(JSON.stringify(facturaData))));
+    window.open(`${VISOR_URL}?data=${payload}`, '_blank');
+
+    // Restaurar botón
     btn.innerHTML = `
       <div style="display: flex; align-items: center; gap: 6px;">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
         <span>Ver KUDE</span>
       </div>
     `;
+    btn.disabled = false;
+  };
 
-    // Estilos del botón (Look & Feel Moderno - Compacto)
-    Object.assign(btn.style, {
-      backgroundColor: '#0052cc',
-      color: 'white',
-      padding: '6px 12px', // Más pequeño
-      border: 'none',
-      borderRadius: '6px', // Bordes un poco menos redondeados
-      cursor: 'pointer',
-      fontSize: '12px', // Fuente más chica
-      fontWeight: '600',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-      margin: '0 10px 10px 0', // Ajuste de margen para alinearse con los otros
-      transition: 'all 0.2s ease'
-    });
-
-    btn.onmouseover = () => btn.style.backgroundColor = '#0041a3';
-    btn.onmouseout = () => btn.style.backgroundColor = '#0052cc';
-
-    btn.onclick = async () => {
-      btn.textContent = "Procesando...";
-      btn.disabled = true;
-
-      // 1. Mapeo de datos detectados (según lista del usuario)
-      const facturaData = {
-        items: getItems(),
-        cdc: getDataByLabel("CDC") || getDataByLabel("CDC:"),
-        timbrado: getDataByLabel("Timbrado N°"),
-        numero: getDataByLabel("N° de DTE"),
-        tipo: getDataByLabel("Tipo de DTE"),
-        fecha: getDataByLabel("Fecha y Hora de Emisión"),
-
-        // Emisor
-        emisor: getDataByLabel("Razón Social del Emisor"),
-        ruc: getDataByLabel("RUC", 1),
-        direccion_emisor: getDataByLabel("Dirección donde se emitió el DTE"),
-        correo_emisor: getDataByLabel("Correo electrónico del emisor"),
-        telefono_emisor: getDataByLabel("Teléfono local de emisión de DE"),
-
-        // Receptor
-        receptor: getDataByLabel("Nombre o Razón Social del Receptor"),
-        ruc_receptor: getDataByLabel("RUC", 2),
-        direccion_receptor: getDataByLabel("Dirección", 2) || getDataByLabel("Direccion", 2),
-        telefono_receptor: getDataByLabel("Teléfono", 2),
-        correo_receptor: getDataByLabel("Correo Electrónico"),
-
-        condicion: getDataByLabel("Condición de Venta"),
-        moneda: getDataByLabel("Moneda de la Operación"),
-
-        // Totales
-        total: getDataByLabel("Monto Total") || getDataByLabel("Total General") || getDataByLabel("Total"),
-        iva_total: getDataByLabel("Liquidación del IVA") || getDataByLabel("Total IVA")
-      };
-
-      /* 
-      // 2. MODO BASE DE DATOS (Desactivado temporalmente)
-      // Descomentar esto cuando configures Supabase para soportar facturas grandes
-      try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(facturaData)
-        });
-
-        if (response.ok) {
-          const { id } = await response.json();
-          window.open(`${VISOR_URL}?id=${id}`, '_blank');
-          return; // Éxito, terminamos aquí
-        }
-      } catch (e) {
-        console.log("Modo offline o sin base de datos activa.");
-      }
-      */
-
-      // 3. MODO LOCAL (Por defecto)
-      // Codificamos los datos en la URL en Base64
-      const payload = btoa(unescape(encodeURIComponent(JSON.stringify(facturaData))));
-      window.open(`${VISOR_URL}?data=${payload}`, '_blank');
-      
-      // Restaurar botón
-      btn.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          <span>Ver KUDE</span>
-        </div>
-      `;
-      btn.disabled = false;
-    };
-
-    // INTENTO DE MEJOR POSICIONAMIENTO
-    // Buscamos el botón "Descargar XML" para ponernos cerca
-    const xpath = "//*[contains(text(), 'Descargar XML')]";
-    const downloadBtnResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-    const downloadBtn = downloadBtnResult.singleNodeValue;
-
-    if (downloadBtn) {
-      // Encontramos el botón, nos insertamos en su contenedor padre
-      // Opcional: Insertar ANTES del botón para que salga a la izquierda/arriba
-      const parent = downloadBtn.closest('div') || downloadBtn.parentElement;
-      if (parent) {
-        // Ajuste de estilo para que no rompa el flex si existe
-        btn.style.marginLeft = "10px";
-        btn.style.marginRight = "15rem"; // Separación para centrar visualmente
-        btn.style.marginBottom = "0px";
-        // Insertamos al principio del contenedor de botones (izquierda) o append (derecha)
-        parent.insertBefore(btn, parent.firstChild);
-      } else {
-        container.appendChild(btn);
-      }
-    } else {
-      // Fallback: Si no hallamos el botón, lo ponemos donde antes
-      container.appendChild(btn);
+  // Insertamos cerca del botón de descarga si existe
+  if (downloadBtn) {
+    const parent = downloadBtn.closest('div') || downloadBtn.parentElement;
+    if (parent) {
+      btn.style.marginLeft = "10px";
+      btn.style.marginRight = "15rem";
+      btn.style.marginBottom = "0px";
+      parent.insertBefore(btn, parent.firstChild);
+      return;
     }
   }
+
+  // FALLBACK: Si detectamos que hay factura (hasTimbrado/hasCDC) pero NO encontramos el botón "Descargar XML" exacto,
+  // lo insertamos en el contenedor principal.
+  const container = document.querySelector('.v-card__title') || document.querySelector('h2') || document.body;
+  container.appendChild(btn);
 }
 
 // Ejecutar cuando el DOM esté listo y observar cambios (por si la web de la SET es una SPA)

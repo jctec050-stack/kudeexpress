@@ -19,7 +19,7 @@ export default function Home() {
 
     if (idParam || dataParam) {
       setLoading(true);
-      
+
       if (idParam) {
         fetch(`/api/invoices?id=${idParam}`)
           .then(res => {
@@ -56,20 +56,20 @@ export default function Home() {
       {/* Navbar - Hidden on print */}
       <nav className="border-b border-gray-200 print:hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-32 items-center">
+          <div className="flex justify-between h-40 items-center">
             <div className="flex items-center gap-2">
-              <Image 
-                src="/logo.png" 
-                alt="KuDE Express Logo" 
-                width={300} 
-                height={120} 
-                className="h-28 w-auto object-contain"
+              <Image
+                src="/logo.png"
+                alt="KuDE Express Logo"
+                width={400}
+                height={160}
+                className="h-36 w-auto object-contain bg-transparent"
                 priority
               />
             </div>
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition">Características</a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition">Cómo funciona</a>
+              <Link href="/como-funciona" className="text-gray-600 hover:text-blue-600 transition">Cómo funciona</Link>
               <Link
                 href="https://github.com/tu-usuario/kudeexpress"
                 target="_blank"
@@ -85,96 +85,94 @@ export default function Home() {
       {/* Invoice Viewer Mode */}
       {(invoiceData || loading || error) && (
         <section className="bg-gray-100 py-12 print:p-0 print:bg-white">
-           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 print:p-0">
-             {loading && (
-               <div className="flex justify-center py-20">
-                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-               </div>
-             )}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 print:p-0">
+            {loading && (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            )}
 
-             {error && (
-               <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-8">
-                 <p className="text-red-700">{error}</p>
-               </div>
-             )}
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-8">
+                <p className="text-red-700">{error}</p>
+              </div>
+            )}
 
-             {invoiceData && (
-               <div className="flex flex-col lg:flex-row gap-8 print:block">
-                 {/* Main Invoice Area */}
-                 <div className="flex-grow print:w-full">
-                    <div className="mb-6 flex justify-between items-center print:hidden">
-                      <h2 className="text-2xl font-bold text-gray-800">Tu Factura Electrónica</h2>
-                      <button 
-                        onClick={() => window.print()}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 font-semibold shadow-md"
-                      >
-                        <span>🖨️</span> Imprimir / Descargar PDF
-                      </button>
-                    </div>
-                    
-                    <InvoiceDisplay data={invoiceData} />
-                 </div>
+            {invoiceData && (
+              <div className="flex flex-col lg:flex-row gap-8 print:block">
+                {/* Main Invoice Area */}
+                <div className="flex-grow print:w-full">
+                  <div className="mb-6 flex justify-between items-center print:hidden">
+                    <h2 className="text-2xl font-bold text-gray-800">Tu Factura Electrónica</h2>
+                    <button
+                      onClick={() => window.print()}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 font-semibold shadow-md"
+                    >
+                      <span>🖨️</span> Imprimir / Descargar PDF
+                    </button>
+                  </div>
 
-                 {/* Sidebar Marketing (Ads) - Hidden on print */}
-                 <div className="lg:w-80 flex-shrink-0 space-y-6 print:hidden">
-                   <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                     <h3 className="font-bold text-lg mb-2 text-blue-800">¿Eres Contador?</h3>
-                     <p className="text-sm text-gray-600 mb-4">
-                       Automatiza la carga de comprobantes con nuestra herramienta Pro. Ahorra 10 horas al mes.
-                     </p>
-                     <button className="w-full bg-blue-50 text-blue-600 font-semibold py-2 rounded-lg hover:bg-blue-100 transition">
-                       Más Información
-                     </button>
-                   </div>
+                  <InvoiceDisplay data={invoiceData} />
+                </div>
 
-                   <div className="bg-gradient-to-br from-purple-600 to-indigo-600 p-6 rounded-xl shadow-md text-white">
-                     <h3 className="font-bold text-lg mb-2">KuDE Express Premium</h3>
-                     <ul className="text-sm space-y-2 mb-4 list-disc list-inside">
-                       <li>Historial ilimitado</li>
-                       <li>Exportación a Excel</li>
-                       <li>Reportes mensuales</li>
-                     </ul>
-                     <button className="w-full bg-white text-indigo-600 font-bold py-2 rounded-lg hover:bg-gray-100 transition">
-                       Probar Gratis
-                     </button>
-                   </div>
-                 </div>
-               </div>
-             )}
-           </div>
+                {/* Sidebar Marketing (Ads) - Hidden on print */}
+                <div className="lg:w-80 flex-shrink-0 space-y-6 print:hidden">
+                  <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
+                    <h3 className="font-bold text-lg mb-2 text-blue-800">¿Eres Contador?</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Automatiza la carga de comprobantes con nuestra herramienta Pro. Ahorra 10 horas al mes.
+                    </p>
+                    <button className="w-full bg-blue-50 text-blue-600 font-semibold py-2 rounded-lg hover:bg-blue-100 transition">
+                      Más Información
+                    </button>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-purple-600 to-indigo-600 p-6 rounded-xl shadow-md text-white">
+                    <h3 className="font-bold text-lg mb-2">KuDE Express Premium</h3>
+                    <ul className="text-sm space-y-2 mb-4 list-disc list-inside">
+                      <li>Historial ilimitado</li>
+                      <li>Exportación a Excel</li>
+                      <li>Reportes mensuales</li>
+                    </ul>
+                    <button className="w-full bg-white text-indigo-600 font-bold py-2 rounded-lg hover:bg-gray-100 transition">
+                      Probar Gratis
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </section>
       )}
 
       {/* Standard Landing Page Content (Hero) - Only show if NO invoice is present to avoid clutter, or keep it below? */}
       {/* Let's keep it below but maybe simpler header if invoice is present */}
       {!invoiceData && !loading && (
-      <section className="relative pt-20 pb-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-block bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
-            🚀 Nueva Versión 1.0 Disponible
+        <section className="relative pt-20 pb-32 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div className="inline-block bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+              🚀 Nueva Versión 1.0 Disponible
+            </div>
+            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
+              Visualiza tus facturas de <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+                e-Kuatia al instante
+              </span>
+            </h1>
+            <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto mb-10">
+              Una extensión de navegador que transforma la experiencia de consultar facturas electrónicas en el portal de la SET. Rápido, limpio y profesional.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <button className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                Descargar Extensión
+              </button>
+
+            </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
-            Visualiza tus facturas de <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-              e-Kuatia al instante
-            </span>
-          </h1>
-          <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-            Una extensión de navegador que transforma la experiencia de consultar facturas electrónicas en el portal de la SET. Rápido, limpio y profesional.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-              Descargar Extensión
-            </button>
-            <Link href="/visor" className="px-8 py-4 bg-white text-gray-700 border border-gray-300 rounded-xl font-bold text-lg hover:bg-gray-50 transition">
-              Ver Demo Visor
-            </Link>
-          </div>
-        </div>
-        
-        {/* Background Blob */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-50 rounded-full blur-3xl opacity-50 -z-10" />
-      </section>
+
+          {/* Background Blob */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-50 rounded-full blur-3xl opacity-50 -z-10" />
+        </section>
       )}
 
       {/* Features Grid */}
@@ -185,20 +183,20 @@ export default function Home() {
             <p className="text-gray-600">Diseñado para contadores y administrativos que valoran su tiempo.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon="⚡" 
-              title="Integración Directa" 
-              desc="Se inyecta directamente en el portal e-Kuatia. Sin copiar y pegar enlaces o XMLs." 
+            <FeatureCard
+              icon="⚡"
+              title="Integración Directa"
+              desc="Se inyecta directamente en el portal e-Kuatia. Sin copiar y pegar enlaces o XMLs."
             />
-            <FeatureCard 
-              icon="📄" 
-              title="Formato A4 Limpio" 
-              desc="Genera una vista previa perfecta para imprimir o guardar como PDF, eliminando el desorden visual." 
+            <FeatureCard
+              icon="📄"
+              title="Formato A4 Limpio"
+              desc="Genera una vista previa perfecta para imprimir o guardar como PDF, eliminando el desorden visual."
             />
-            <FeatureCard 
-              icon="🔒" 
-              title="100% Privado" 
-              desc="Tus datos no se guardan en nuestros servidores. Todo el procesamiento ocurre en tu navegador." 
+            <FeatureCard
+              icon="🔒"
+              title="100% Privado"
+              desc="Tus datos no se guardan en nuestros servidores. Todo el procesamiento ocurre en tu navegador."
             />
           </div>
         </div>
@@ -209,9 +207,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-gray-500">
             © 2026 KuDE Express. Derechos reservados. Creado por{' '}
-            <a 
-              href="https://nexabyte-portafolio.vercel.app/" 
-              target="_blank" 
+            <a
+              href="https://nexabyte-portafolio.vercel.app/"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 font-semibold hover:underline"
             >
