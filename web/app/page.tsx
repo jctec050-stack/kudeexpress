@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { InvoiceData } from '@/types/factura';
 import InvoiceDisplay from '@/components/InvoiceDisplay';
 import RucSearch from '@/components/RucSearch';
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -227,5 +227,13 @@ function FeatureCard({ icon, title, desc }: { icon: string, title: string, desc:
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       <p className="text-gray-600">{desc}</p>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">Cargando...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
