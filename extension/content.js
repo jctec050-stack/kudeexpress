@@ -50,6 +50,40 @@ function getDataByLabel(label, occurrence = 1) {
       return td.nextElementSibling.textContent.trim();
     }
 
+    // Estrategia 4: Layout Vertical / Grid (Label en un div, Valor en el siguiente div hermano del padre)
+    // Usado cuando el valor está "debajo" visualmente pero en el DOM son bloques hermanos
+    // Estructura posible: <div>Label</div> <div>Valor</div>
+    if (element.parentElement && element.parentElement.nextElementSibling) {
+      const nextBlock = element.parentElement.nextElementSibling;
+      const val = nextBlock.textContent.trim();
+      // Validamos que no sea otro label o algo muy largo
+      if (val && val.length < 50) return val;
+    }
+
+    // Estrategia 5: Encabezado de Tabla (TH -> TD correspondiente en TBODY)
+    // Caso: Moneda de la Operación (TH en THEAD) -> Valor (TD en TBODY)
+    if (element.tagName === 'TH' || element.closest('th')) {
+      const th = element.tagName === 'TH' ? element : element.closest('th');
+      const table = th.closest('table');
+      if (table) {
+        // Buscamos el índice de este TH
+        const thIndex = Array.from(th.parentElement.children).indexOf(th);
+
+        // Buscamos el primer TR del TBODY
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+          const firstRow = tbody.querySelector('tr');
+          if (firstRow) {
+            // Buscamos el TD en la misma posición visual (asumiendo estructura simple o colspans simétricos)
+            const targetTd = firstRow.children[thIndex];
+            if (targetTd) {
+              return targetTd.textContent.trim();
+            }
+          }
+        }
+      }
+    }
+
     return "";
   } catch (e) {
     console.error("Error extrayendo " + label, e);
@@ -237,7 +271,20 @@ function injectKudeButton() {
       correo_receptor: getDataByLabel("Correo Electrónico"),
 
       condicion: getDataByLabel("Condición de Venta"),
-      moneda: getDataByLabel("Moneda de la Operación"),
+      moneda: (function () {
+        // 1. Intento por etiqueta específica (Prioridad a "Moneda" como sugirió el usuario)
+        const val = getDataByLabel("Moneda") || getDataByLabel("Moneda de la Operación");
+        if (val) {
+          if (val.includes("Guarani") || val.includes("Guaraní")) return "GS";
+          if (val.includes("US Dollar") || val.includes("Dolar")) return "USD";
+        }
+
+        // 2. Fallback: Búsqueda global (por seguridad si falla la extracción de tabla o label)
+        const text = document.body.innerText;
+        if (text.includes("US Dollar") || text.includes("Dolar")) return "USD";
+
+        return "GS"; // 3. Default final
+      })(),
 
       // Totales
       total: getDataByLabel("Monto Total") || getDataByLabel("Total General") || getDataByLabel("Total"),

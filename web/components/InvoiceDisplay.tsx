@@ -130,7 +130,7 @@ export default function InvoiceDisplay({ data }: InvoiceDisplayProps) {
                         <tr>
                             <td colSpan={6} className="border border-gray-400 p-2 text-left font-bold">Total de la Factura</td>
                             <td className="border border-gray-400 p-2 text-right font-bold text-sm">
-                                {formatNum(totalGeneral)}
+                                {formatNum(totalGeneral)} {data.moneda}
                             </td>
                         </tr>
                         <tr>

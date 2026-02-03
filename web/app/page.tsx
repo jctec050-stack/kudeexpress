@@ -58,24 +58,26 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-40 items-center">
             <div className="flex items-center gap-2">
-              <Image
-                src="/logo.png"
-                alt="KuDE Express Logo"
-                width={400}
-                height={160}
-                className="h-36 w-auto object-contain bg-transparent"
-                priority
-              />
+              <Link href="/">
+                <Image
+                  src="/logo.png"
+                  alt="KuDE Express Logo"
+                  width={400}
+                  height={160}
+                  className="h-36 w-auto object-contain bg-transparent cursor-pointer"
+                  priority
+                />
+              </Link>
             </div>
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition">Características</a>
               <Link href="/como-funciona" className="text-gray-600 hover:text-blue-600 transition">Cómo funciona</Link>
               <Link
-                href="https://github.com/tu-usuario/kudeexpress"
+                href="https://ekuatia.set.gov.py/consultas"
                 target="_blank"
                 className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
               >
-                GitHub
+                Nueva Consulta
               </Link>
             </div>
           </div>
@@ -117,26 +119,8 @@ export default function Home() {
 
                 {/* Sidebar Marketing (Ads) - Hidden on print */}
                 <div className="lg:w-80 flex-shrink-0 space-y-6 print:hidden">
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-                    <h3 className="font-bold text-lg mb-2 text-blue-800">¿Eres Contador?</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Automatiza la carga de comprobantes con nuestra herramienta Pro. Ahorra 10 horas al mes.
-                    </p>
-                    <button className="w-full bg-blue-50 text-blue-600 font-semibold py-2 rounded-lg hover:bg-blue-100 transition">
-                      Más Información
-                    </button>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-purple-600 to-indigo-600 p-6 rounded-xl shadow-md text-white">
-                    <h3 className="font-bold text-lg mb-2">KuDE Express Premium</h3>
-                    <ul className="text-sm space-y-2 mb-4 list-disc list-inside">
-                      <li>Historial ilimitado</li>
-                      <li>Exportación a Excel</li>
-                      <li>Reportes mensuales</li>
-                    </ul>
-                    <button className="w-full bg-white text-indigo-600 font-bold py-2 rounded-lg hover:bg-gray-100 transition">
-                      Probar Gratis
-                    </button>
+                  <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center h-64">
+                    <p className="text-gray-400 font-semibold text-center">Panel para publicidad</p>
                   </div>
                 </div>
               </div>
