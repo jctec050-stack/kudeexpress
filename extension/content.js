@@ -1,3 +1,8 @@
+// Configuración
+const BASE_URL = "http://localhost:3000"; // CAMBIAR POR URL DE PRODUCCIÓN
+const API_URL = `${BASE_URL}/api/invoices`;
+const VISOR_URL = `${BASE_URL}`; // Ahora es la raíz
+
 // Función para extraer datos de las tablas de e-Kuatia
 // Función mejorada para extraer datos usando XPath y manejo de Inputs
 // Además inyectaremos un script para interceptar la red si es necesario
@@ -192,7 +197,10 @@ function injectKudeButton() {
     btn.onmouseover = () => btn.style.backgroundColor = '#0041a3';
     btn.onmouseout = () => btn.style.backgroundColor = '#0052cc';
 
-    btn.onclick = () => {
+    btn.onclick = async () => {
+      btn.textContent = "Procesando...";
+      btn.disabled = true;
+
       // 1. Mapeo de datos detectados (según lista del usuario)
       const facturaData = {
         items: getItems(),
@@ -224,12 +232,41 @@ function injectKudeButton() {
         iva_total: getDataByLabel("Liquidación del IVA") || getDataByLabel("Total IVA")
       };
 
-      // 2. Codificación
-      const payload = btoa(unescape(encodeURIComponent(JSON.stringify(facturaData))));
+      /* 
+      // 2. MODO BASE DE DATOS (Desactivado temporalmente)
+      // Descomentar esto cuando configures Supabase para soportar facturas grandes
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(facturaData)
+        });
 
-      // 3. Redirección
-      const baseUrl = "http://localhost:3000/visor";
-      window.open(`${baseUrl}?data=${payload}`, '_blank');
+        if (response.ok) {
+          const { id } = await response.json();
+          window.open(`${VISOR_URL}?id=${id}`, '_blank');
+          return; // Éxito, terminamos aquí
+        }
+      } catch (e) {
+        console.log("Modo offline o sin base de datos activa.");
+      }
+      */
+
+      // 3. MODO LOCAL (Por defecto)
+      // Codificamos los datos en la URL en Base64
+      const payload = btoa(unescape(encodeURIComponent(JSON.stringify(facturaData))));
+      window.open(`${VISOR_URL}?data=${payload}`, '_blank');
+      
+      // Restaurar botón
+      btn.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <span>Ver KUDE</span>
+        </div>
+      `;
+      btn.disabled = false;
     };
 
     // INTENTO DE MEJOR POSICIONAMIENTO

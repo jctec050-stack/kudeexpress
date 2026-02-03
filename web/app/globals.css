@@ -24,3 +24,28 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  body {
+    background: white;
+  }
+  
+  /* Ocultar elementos que tengan la clase print:hidden (ya lo hace Tailwind, pero reforzamos) */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Asegurar que el contenedor principal ocupe todo */
+  .print-full-width {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    max-width: none !important;
+  }
+}

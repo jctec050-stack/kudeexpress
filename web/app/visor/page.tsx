@@ -2,15 +2,30 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { InvoiceData, InvoiceItem } from '@/types/factura';
 
 export default function VisorPage() {
     const searchParams = useSearchParams();
-    const [invoiceData, setInvoiceData] = useState<any>(null);
+    const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const dataParam = searchParams.get('data');
-        if (dataParam) {
+        const idParam = searchParams.get('id');
+
+        if (idParam) {
+            // Cargar desde Supabase vía API
+            fetch(`/api/invoices?id=${idParam}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Factura no encontrada");
+                    return res.json();
+                })
+                .then(data => setInvoiceData(data))
+                .catch(err => {
+                    console.error(err);
+                    setError("No se pudo cargar la factura. Puede que el enlace haya expirado.");
+                });
+        } else if (dataParam) {
             try {
                 const jsonString = decodeURIComponent(escape(window.atob(dataParam)));
                 const parsedData = JSON.parse(jsonString);
@@ -32,8 +47,12 @@ export default function VisorPage() {
         return <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100 font-sans">Cargando KUDE...</div>;
     }
 
+    if (error) {
+         return <div className="min-h-screen flex items-center justify-center p-6 bg-red-50 text-red-600 font-sans">{error}</div>;
+    }
+
     // Datos por defecto o los que vengan de la extensión
-    const data = invoiceData || {
+    const data: InvoiceData = invoiceData || {
         cdc: "01800160657001001000043122024042410000009105",
         emisor: "SERVICIOS MERCANTILES INTERNACIONALES SRL",
         ruc: "80016065-7",
@@ -46,15 +65,17 @@ export default function VisorPage() {
         receptor: "Tavares Camiones SA",
         ruc_receptor: "80055371-3",
         total: "11.696",
-        iva_total: "231"
+        iva_total: "231",
+        items: []
     };
 
     // Cálculos de Totales Locales (Mas fiable que extraer)
     const items = data.items || [];
 
     // Función auxiliar para parsear números "1.000,00" o "1.000"
-    const parseNum = (str: any) => {
+    const parseNum = (str: string | number | undefined) => {
         if (!str) return 0;
+        if (typeof str === 'number') return str;
         // Eliminar puntos de miles, cambiar coma decimal por punto (si hubiera, aunque en PY suele ser entero)
         const clean = str.toString().replace(/\./g, '').replace(',', '.');
         const val = parseFloat(clean);
@@ -64,9 +85,9 @@ export default function VisorPage() {
     // Función formateadora inversa (Numero -> "1.000")
     const formatNum = (num: number) => num.toLocaleString('es-PY');
 
-    const subtotalExenta = items.reduce((acc: number, item: any) => acc + parseNum(item.exenta), 0);
-    const subtotal5 = items.reduce((acc: number, item: any) => acc + parseNum(item.iva5), 0);
-    const subtotal10 = items.reduce((acc: number, item: any) => acc + parseNum(item.iva10), 0);
+    const subtotalExenta = items.reduce((acc: number, item: InvoiceItem) => acc + parseNum(item.exenta), 0);
+    const subtotal5 = items.reduce((acc: number, item: InvoiceItem) => acc + parseNum(item.iva5), 0);
+    const subtotal10 = items.reduce((acc: number, item: InvoiceItem) => acc + parseNum(item.iva10), 0);
 
     // Total General
     const totalGeneral = subtotalExenta + subtotal5 + subtotal10;
@@ -145,20 +166,21 @@ export default function VisorPage() {
                         </thead>
                         <tbody>
                             {/* Items Reales */}
-                            {(data.items && data.items.length > 0 ? data.items : [1, 2, 3]).map((item: any, i: number) => {
+                            {(data.items && data.items.length > 0 ? data.items : [1, 2, 3]).map((item: InvoiceItem | number, i: number) => {
                                 // Si es un placeholder (número), mostramos vacío
                                 const isPlaceholder = typeof item === 'number';
+                                const realItem = !isPlaceholder ? (item as InvoiceItem) : null;
                                 return (
                                     <tr key={i} className="h-6">
-                                        <td className="border-l border-r border-gray-400 px-1 text-center">{!isPlaceholder ? item.codigo : ""}</td>
-                                        <td className="border-l border-r border-gray-400 px-1 text-center">{!isPlaceholder ? item.cantidad : ""}</td>
+                                        <td className="border-l border-r border-gray-400 px-1 text-center">{realItem ? realItem.codigo : ""}</td>
+                                        <td className="border-l border-r border-gray-400 px-1 text-center">{realItem ? realItem.cantidad : ""}</td>
                                         <td className="border-l border-r border-gray-400 px-2 text-left truncate max-w-[200px]">
-                                            {!isPlaceholder ? item.descripcion : (i === 0 ? "(Sin productos detectados)" : "")}
+                                            {realItem ? realItem.descripcion : (i === 0 ? "(Sin productos detectados)" : "")}
                                         </td>
-                                        <td className="border-l border-r border-gray-400 px-1 text-right">{!isPlaceholder ? item.precio : ""}</td>
-                                        <td className="border-l border-r border-gray-400 px-1 text-right">{!isPlaceholder ? item.exenta : ""}</td>
-                                        <td className="border-l border-r border-gray-400 px-1 text-right">{!isPlaceholder ? item.iva5 : ""}</td>
-                                        <td className="border-l border-r border-gray-400 px-1 text-right">{!isPlaceholder ? item.iva10 : ""}</td>
+                                        <td className="border-l border-r border-gray-400 px-1 text-right">{realItem ? realItem.precio : ""}</td>
+                                        <td className="border-l border-r border-gray-400 px-1 text-right">{realItem ? realItem.exenta : ""}</td>
+                                        <td className="border-l border-r border-gray-400 px-1 text-right">{realItem ? realItem.iva5 : ""}</td>
+                                        <td className="border-l border-r border-gray-400 px-1 text-right">{realItem ? realItem.iva10 : ""}</td>
                                     </tr>
                                 );
                             })}
