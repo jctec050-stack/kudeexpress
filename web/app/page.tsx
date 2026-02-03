@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { InvoiceData } from '@/types/factura';
 import InvoiceDisplay from '@/components/InvoiceDisplay';
+import RucSearch from '@/components/RucSearch';
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -72,6 +73,7 @@ export default function Home() {
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition">Características</a>
               <Link href="/como-funciona" className="text-gray-600 hover:text-blue-600 transition">Cómo funciona</Link>
+              <Link href="/contactos" className="text-gray-600 hover:text-blue-600 transition">Contacto</Link>
               <Link
                 href="https://ekuatia.set.gov.py/consultas"
                 target="_blank"
@@ -159,6 +161,15 @@ export default function Home() {
         </section>
       )}
 
+      {/* RUC Search Section (New) */}
+      {!invoiceData && (
+        <section className="py-12 bg-white print:hidden border-t border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <RucSearch />
+          </div>
+        </section>
+      )}
+
       {/* Features Grid */}
       <section id="features" className="py-20 bg-gray-50 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -201,8 +212,7 @@ export default function Home() {
             </a>
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-gray-400 hover:text-gray-600">Privacidad</a>
-            <a href="#" className="text-gray-400 hover:text-gray-600">Contacto</a>
+            <Link href="/contactos" className="text-gray-400 hover:text-gray-600">Contacto</Link>
           </div>
         </div>
       </footer>

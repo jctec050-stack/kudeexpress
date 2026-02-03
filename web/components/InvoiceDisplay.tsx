@@ -38,7 +38,7 @@ export default function InvoiceDisplay({ data }: InvoiceDisplayProps) {
             {/* Header KUDE */}
             <div className="border-t-2 border-b-2 border-gray-400 py-2 mb-4">
                 <h1 className="text-center text-2xl font-normal text-gray-700 uppercase tracking-widest">
-                    KUDE Factura Electrónica
+                    KUDE {data.tipo || "Factura Electrónica"}
                 </h1>
             </div>
 
@@ -46,7 +46,7 @@ export default function InvoiceDisplay({ data }: InvoiceDisplayProps) {
             <div className="grid grid-cols-2 gap-4 mb-2">
                 {/* Columna Izquierda: Datos Factura */}
                 <div className="border border-gray-400 p-2 text-xs space-y-1">
-                    <h3 className="font-bold underline mb-1">Datos de la factura</h3>
+                    <h3 className="font-bold underline mb-1">Datos del documento</h3>
                     <div className="flex"><span className="w-32 font-bold">Fecha Inicio Vigencia:</span> <span>-</span></div>
                     <div className="flex"><span className="w-32 font-bold">Timbrado Nro:</span> <span>{data.timbrado || "---"}</span></div>
                     <div className="flex"><span className="w-32 font-bold">Tipo Documento:</span> <span>{data.tipo || "Factura Electrónica"}</span></div>
