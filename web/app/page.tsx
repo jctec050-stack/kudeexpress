@@ -25,9 +25,14 @@ function LandingContent() {
             Una extensión de navegador que transforma la experiencia de consultar facturas electrónicas en el portal de la SET. Rápido, limpio y profesional.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <a 
+              href="https://chromewebstore.google.com/detail/kude-express-paraguay/epiagjdcnkblbfkclfhdbeglohjodceg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-block"
+            >
               Descargar Extensión
-            </button>
+            </a>
           </div>
         </div>
 
