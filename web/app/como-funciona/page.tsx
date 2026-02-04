@@ -24,32 +24,15 @@ export default function HowItWorks() {
                 </div>
 
                 <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-2xl aspect-video relative">
-                    {/* Placeholder for Video */}
-                    <div className="absolute inset-0 flex items-center justify-center text-white flex-col">
-                        <svg
-                            className="w-20 h-20 mb-4 opacity-50"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="font-semibold text-lg">Video Demostrativo</p>
-                        <p className="text-sm text-gray-400 mt-2">Próximamente disponible</p>
-                    </div>
-                    {/* 
-            To embed a YouTube video, replace the above div with:
-            <iframe 
-              width="100%" 
-              height="100%" 
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-              title="YouTube video player" 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-            ></iframe>
-          */}
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/nwR82D8Xlfw" 
+                        title="Cómo funciona KuDE Express" 
+                        frameBorder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowFullScreen
+                    ></iframe>
                 </div>
 
                 <div className="mt-16 grid gap-8 md:grid-cols-3">
